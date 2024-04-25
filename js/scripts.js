@@ -10,14 +10,18 @@ const postId = urlSearchParams.get("id");
 
 const postPage = document.querySelector("#post");
 const postContainer = document.querySelector("#post-container");
-const commentContainer = document.querySelector("#comment-form");
+const commentContainer = document.querySelector("#comments-container");
+
+const commentForm = document.querySelector("#comment-form");
+const emailImput = document.querySelector("#email");
+const bodyInput = document.querySelector("#body");
 
 // Get all posts 
 
 async function getAllPosts(){
     const response = await fetch(url);
 
-    console.log(response);
+    console.log(response);  
 
     const data = await response.json();
 
@@ -92,11 +96,40 @@ function creatComment(comment) {
     commentContainer.appendChild(div);
 }
 
+// Post comment
 
+async function postComment(comment){
+    const response = await fetch(`${url}/${postId}/comments`, {
+        method: "POST",
+        body: comment,
+        headers: {
+            "Content-type": "application/json",
+        }
+    });
+    const data = await response.json();
+    console.log(data);
+
+    creatComment(data);
+}
 
 
 if(!postId){
     getAllPosts();
 } else {
     getPost(postId);
+
+    // add  event to comment form
+
+    commentForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let comment = {
+            email: emailImput.value,
+            body: bodyInput.value,
+        }
+
+        console.log(comment);
+
+        comment =JSON.stringify(comment);
+        postComment(comment);
+    });
 }
